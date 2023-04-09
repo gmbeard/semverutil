@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+topdir=$(cd $(dirname $0)/..; pwd)
+version=$(cat ${topdir}/.versioning/current)
+
+cd ${topdir}
+
+tar \
+    --exclude './build' \
+    --exclude './tools' \
+    --exclude './.git' \
+    --exclude './.cache' \
+    --transform 's;^\.;semverutil-'${version}';' \
+    -cJf /tmp/semverutil-${version}.tar.xz \
+    .
