@@ -1,6 +1,7 @@
 #ifndef SEMVERUTIL_SEMVER_HPP_INCLUDED
 #define SEMVERUTIL_SEMVER_HPP_INCLUDED
 
+#include "./detail/semver.hpp"
 #include "./utils.hpp"
 #include <array>
 #include <cstring>
@@ -12,55 +13,48 @@ namespace semver
 {
 struct SemVer
 {
-    std::array<uint32_t, 3> version;
+    std::array<uint32_t, 4> version;
     std::string prerelease;
     std::string metadata;
 
     auto operator<=>(SemVer const& rhs) const noexcept -> std::partial_ordering;
     auto operator==(SemVer const& rhs) const noexcept -> bool;
+
+    auto major() const noexcept { return version[0]; };
+    auto minor() const noexcept { return version[1]; };
+    auto patch() const noexcept { return version[2]; };
+    auto revision() const noexcept { return version[3]; };
 };
 
 template <typename InputIterator>
 auto parse_semver(InputIterator first, InputIterator last)
     -> std::optional<SemVer>
 {
-    std::array<std::string_view, 2> core_and_remaining {};
-    auto r = split_to(
-        first, last, '-', begin(core_and_remaining), end(core_and_remaining));
+    std::string_view const empty = "";
 
-    if (r == begin(core_and_remaining))
+    std::array<std::string_view, 3> parts {};
+    auto r = split_to(first, last, AnyOf { "-+" }, begin(parts), end(parts));
+
+    if (r == begin(parts))
         return std::nullopt;
+
+    while (r != end(parts))
+        *r++ = empty;
 
     decltype(SemVer::version) version {};
 
-    auto const version_split_end =
-        split_to(begin(core_and_remaining[0]),
-                 end(core_and_remaining[0]),
-                 '.',
-                 version.begin(),
-                 version.end(),
-                 [](auto u, auto v) {
-                     std::remove_reference_t<decltype(version[0])> val;
-                     parse_numeric_value(u, v, val);
-                     return val;
-                 });
+    auto [error, out_pos, in_pos] = detail::parse_version(
+        parts[0].data(), parts[0].size(), version.begin(), version.end());
 
-    if (version_split_end != end(version))
+    if (error)
         return std::nullopt;
 
-    std::array<std::string_view, 2> prerelease_and_metadata {};
-
-    if (r == end(core_and_remaining)) {
-        r = split_to(begin(core_and_remaining[1]),
-                     end(core_and_remaining[1]),
-                     '+',
-                     begin(prerelease_and_metadata),
-                     end(prerelease_and_metadata));
-    }
+    while (out_pos != version.end())
+        *out_pos++ = 0;
 
     return SemVer { version,
-                    std::string { prerelease_and_metadata[0] },
-                    std::string { prerelease_and_metadata[1] } };
+                    std::string { parts[1] },
+                    std::string { parts[2] } };
 }
 
 template <typename InputIterator, typename Container>

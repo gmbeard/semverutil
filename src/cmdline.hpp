@@ -16,6 +16,7 @@ enum : std::uint32_t
     increment_major = 1,
     increment_minor = 2,
     increment_patch = 4,
+    increment_revision = 8,
 };
 
 }

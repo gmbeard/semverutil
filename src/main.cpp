@@ -8,6 +8,8 @@
 auto operator<<(std::ostream& os, semver::SemVer const& val) -> std::ostream&
 {
     os << val.version[0] << '.' << val.version[1] << '.' << val.version[2];
+    if (val.version[3])
+        os << '_' << val.version[3];
 
     if (val.prerelease.size())
         os << '-' << val.prerelease;
@@ -48,10 +50,16 @@ auto main(int argc, char const** argv) -> int
     if (opts & semver::CmdLineSwitches::increment_minor) {
         r.version[1] += 1;
         r.version[2] = 0;
+        r.version[3] = 0;
     }
 
     if (opts & semver::CmdLineSwitches::increment_patch) {
         r.version[2] += 1;
+        r.version[3] = 0;
+    }
+
+    if (opts & semver::CmdLineSwitches::increment_revision) {
+        r.version[3] += 1;
     }
 
     std::cout << r << '\n';
