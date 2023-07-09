@@ -2,12 +2,16 @@
 .SH NAME
 \fBsemverutil\fP - Semantic version command line utility
 .SH SYNOPSIS
-\fBsemverutil\fP [ -MNP ]
+\fBsemverutil\fP [ -MNPR ]
 .SH DESCRIPTION
 \fBsemverutil\fP parses semantic version strings from \fBSTDIN\fP and optionally
-increments the major, minor, or patch version. If no options are specified then
+increments the major, minor, patch or revision. If no options are specified then
 \fBsemverutil\fP will output the highest of the semantic version values given
 in \fBSTDIN\fP.
+.PP
+\fBsemverutil\fP includes an extension to the semver standard that allows
+revisions - an additional value to the immediate right-hand side of
+the core version, separated by an underscore.
 .SS Options
 .TP
 \fB-M\fP
@@ -18,3 +22,6 @@ Increment the minor version
 .TP
 \fB-P\fP
 Increment the patch version
+.TP
+\fB-R\fP
+Increment the revision

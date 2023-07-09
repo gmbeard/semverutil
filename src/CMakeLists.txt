@@ -1,6 +1,7 @@
 add_library(
     semverutilobj OBJECT
     cmdline.cpp
+    detail/semver.cpp
     semver.cpp
     utils.cpp
 )

@@ -20,3 +20,30 @@ add_test(NAME parsing_tests
 add_executable(cmdline_tests cmdline_tests.cpp)
 target_link_libraries(cmdline_tests testing)
 add_test(NAME cmdline_tests COMMAND cmdline_tests -M -NP)
+
+add_executable(core_version_validity_tests core_version_validity_tests.cpp)
+target_link_libraries(core_version_validity_tests testing)
+configure_file(valid_core_version_tests_wrapper.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/valid_core_version_tests_wrapper.sh
+    COPYONLY
+    FILE_PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+)
+configure_file(invalid_core_version_tests_wrapper.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/invalid_core_version_tests_wrapper.sh
+    COPYONLY
+    FILE_PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+)
+add_test(NAME valid_core_version_tests
+    COMMAND valid_core_version_tests_wrapper.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+add_test(NAME invalid_core_version_tests
+    COMMAND invalid_core_version_tests_wrapper.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)

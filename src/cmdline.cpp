@@ -24,6 +24,9 @@ auto parse_cmdline(std::span<char const*> cmdline) noexcept -> std::uint32_t
             case 'P':
                 opts |= CmdLineSwitches::increment_patch;
                 break;
+            case 'R':
+                opts |= CmdLineSwitches::increment_revision;
+                break;
             }
         }
     }
