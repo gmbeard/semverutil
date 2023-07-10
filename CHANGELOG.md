@@ -1,3 +1,7 @@
+## 0.2.1
+### PATCH Changes:
+- Fixes incorrect path in test wrapper shell scripts
+
 ## 0.2.0
 ### MINOR Changes:
 - Improves the standard compliance of core version parser
