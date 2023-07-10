@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-./valid_semver_tests <<-EOF
+./core_version_validity_tests <<-EOF
 1.0.0
 1.0.0_0
 1.2.3_4
