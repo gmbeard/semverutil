@@ -42,8 +42,31 @@ auto should_parse_from_stdin() -> void
     EXPECT(results.size());
 }
 
+auto should_parse_revision_when_incomplete_core()
+{
+    constexpr char const kInput[] = R"#(1_1
+1.2_2
+")#";
+
+    std::vector<SemVer> results;
+    parse_multiple(std::begin(kInput), std::end(kInput), results);
+    EXPECT(results.size() == 2);
+
+    EXPECT(results[0].major() == 1);
+    EXPECT(results[0].minor() == 0);
+    EXPECT(results[0].patch() == 0);
+    EXPECT(results[0].revision() == 1);
+
+    EXPECT(results[1].major() == 1);
+    EXPECT(results[1].minor() == 2);
+    EXPECT(results[1].patch() == 0);
+    EXPECT(results[1].revision() == 2);
+}
+
 auto main() -> int
 {
     return semver::testing::run(
-        { TEST(should_parse_multiple), TEST(should_parse_from_stdin) });
+        { TEST(should_parse_multiple),
+          TEST(should_parse_from_stdin),
+          TEST(should_parse_revision_when_incomplete_core) });
 }

@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <iterator>
+#include <limits>
 #include <type_traits>
 
 namespace semver::detail
@@ -10,16 +11,21 @@ namespace semver::detail
 auto is_digit(char val) noexcept -> bool;
 
 template <typename T>
-auto convert_to(char const* data, std::size_t len) -> T
+auto convert_to(char const* data, std::size_t len, T& result) -> bool
 requires(std::is_unsigned_v<T>)
 {
-    T result {};
+    result = T(0);
     while (len--) {
         char c = *data++;
+        /* Check for overflow...
+         */
+        if ((std::numeric_limits<T>::max() / 10 - static_cast<T>(c - '0')) <
+            result)
+            return false;
         result = result * 10 + static_cast<T>(c - '0');
     }
 
-    return result;
+    return true;
 }
 
 template <typename OutputIterator>
@@ -44,6 +50,8 @@ auto parse_version(char const* data,
     {
         FIRST_DIGIT = 1,
         DIGIT,
+        FIRST_REVISION_DIGIT,
+        REVISION_DIGIT,
         DELIMITER,
         CONSUME_DIGITS,
 
@@ -53,33 +61,35 @@ auto parse_version(char const* data,
          */
         ERROR_UNEXPECTED_TOKEN,
         ERROR_UNEXPECTED_EOF,
+        ERROR_OVERFLOW,
     } state = FIRST_DIGIT;
 
     char const* const data_end = data + data_len;
     char const* value_end = data;
     unsigned part_index = 0;
+    bool got_early_revision_value = false;
 
     while (state < END && o_pos != o_last) {
         switch (state) {
         case FIRST_DIGIT:
             if (!is_digit(*value_end)) {
                 state = ERROR_UNEXPECTED_TOKEN;
+                break;
             }
-            else {
-                state = (*value_end == '0') ? DELIMITER : DIGIT;
-                ++value_end;
-                state = (value_end == data_end) ? CONSUME_DIGITS : state;
-            }
+
+            state = (*value_end == '0') ? DELIMITER : DIGIT;
+            ++value_end;
+            state = (value_end == data_end) ? CONSUME_DIGITS : state;
             break;
 
         case DIGIT:
             if (!is_digit(*value_end)) {
                 state = DELIMITER;
+                break;
             }
-            else {
-                ++value_end;
-                state = (value_end == data_end) ? CONSUME_DIGITS : state;
-            }
+
+            ++value_end;
+            state = (value_end == data_end) ? CONSUME_DIGITS : state;
             break;
 
         case DELIMITER:
@@ -89,8 +99,7 @@ auto parse_version(char const* data,
                     part_index < 2 ? CONSUME_DIGITS : ERROR_UNEXPECTED_TOKEN;
                 break;
             case '_':
-                state =
-                    part_index == 2 ? CONSUME_DIGITS : ERROR_UNEXPECTED_TOKEN;
+                state = CONSUME_DIGITS;
                 break;
             default:
                 state = ERROR_UNEXPECTED_TOKEN;
@@ -99,17 +108,32 @@ auto parse_version(char const* data,
             break;
 
         case CONSUME_DIGITS:
-            *o_pos++ = convert_to<
-                typename std::iterator_traits<OutputIterator>::value_type>(
-                data, std::size_t(value_end - data));
-            if (value_end != data_end) {
-                data = ++value_end;
-                state = FIRST_DIGIT;
+            /* If we encountered the revision value early then
+             * we must set all but the last remaining output values
+             * to zero...
+             */
+            if (got_early_revision_value)
+                while (std::next(o_pos) != o_last)
+                    *o_pos++ = 0;
+
+            if (!convert_to(data, std::size_t(value_end - data), *o_pos)) {
+                state = ERROR_OVERFLOW;
+                break;
             }
-            else {
-                state = END;
-            }
+
+            ++o_pos;
             ++part_index;
+
+            if (value_end == data_end) {
+                state = END;
+                break;
+            }
+
+            /* Have we encountered an early revision value?...
+             */
+            got_early_revision_value = *value_end == '_';
+            state = FIRST_DIGIT;
+            data = ++value_end;
             break;
 
         default:
