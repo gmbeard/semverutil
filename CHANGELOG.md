@@ -1,3 +1,8 @@
+## 0.2.2
+### PATCH Changes:
+- Fixes an issue where the revision value was interpreted as a core version value if encountered early in the value string
+- Adds an overflow check when parsing the numberical parts of a version string
+
 ## 0.2.1
 ### PATCH Changes:
 - Fixes incorrect path in test wrapper shell scripts
