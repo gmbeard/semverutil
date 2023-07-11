@@ -1,3 +1,11 @@
+## 0.3.0
+### MINOR Changes:
+- Fixes a parsing issue where additional revision values on the input were treated as valid
+- Fixes and issue where incrementing the major version didn't reset the revision value
+
+### PATCH Changes:
+- Slight improvements to the `add-version-change` utility
+
 ## 0.2.2
 ### PATCH Changes:
 - Fixes an issue where the revision value was interpreted as a core version value if encountered early in the value string
