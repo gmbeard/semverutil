@@ -2,7 +2,7 @@
 
 topdir="$(cd $(dirname $0)/..; pwd)"
 changesdir="${topdir}/.versioning/changes"
-randomstring=$(</dev/urandom tr -c -d '[[:alnum:]]' | head -c 10)
+randomstring=$(LC_ALL=C </dev/urandom tr -c -d 'a-zA-Z0-9' | head -c 10)
 editor=${EDITOR:=vim}
 
 while [ ${#} -ne 0 ]; do
@@ -63,4 +63,6 @@ fi
 
 [ -d "${changesdir}" ] || mkdir -p "${changesdir}"
 
-cp "${tmpchangesfile}" "${changesdir}/${randomstring}.${versiontype}.md"
+outputfile="${changesdir}/${randomstring}.${versiontype}.md"
+cp "${tmpchangesfile}" "${outputfile}"
+echo "Version change saved to: ${outputfile}"
