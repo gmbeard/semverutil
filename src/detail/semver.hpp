@@ -147,6 +147,9 @@ auto parse_version(char const* data,
         }
     }
 
+    if (value_end != data_end)
+        return { ERROR_UNEXPECTED_TOKEN, o_pos, value_end };
+
     return { state == END || o_pos == o_last ? 0 : state, o_pos, value_end };
 }
 

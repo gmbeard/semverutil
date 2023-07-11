@@ -98,6 +98,8 @@ auto should_be_valid_semver(std::string_view value, bool check_valid) -> void
 
 TEST_WITH_CONTEXT(should_be_valid_semver_input)
 {
+    using semver::testing::TestFailure;
+
     std::span<char const*> args = { test_context.argv,
                                     std::size_t(test_context.argc) };
 
@@ -114,6 +116,7 @@ TEST_WITH_CONTEXT(should_be_valid_semver_input)
 
     std::string_view remaining_data { buffer.data(), buffer.size() };
     std::size_t n = 0;
+    std::size_t error_count = 0;
     while (remaining_data.size()) {
         std::string_view line;
         auto const [error, rest] = read_line(remaining_data, line);
@@ -121,9 +124,19 @@ TEST_WITH_CONTEXT(should_be_valid_semver_input)
             std::cerr << "Couldn't read line: " << (n + 1) << '\n';
         }
         EXPECT(!error);
-        should_be_valid_semver(line, !test_for_invalid);
+        try {
+            should_be_valid_semver(line, !test_for_invalid);
+        }
+        catch (TestFailure const&) {
+            ++error_count;
+        }
+        catch (...) {
+            throw;
+        }
         remaining_data = rest;
     }
+
+    EXPECT(error_count == 0);
 }
 
 TEST_WITH_CONTEXT(should_parse_version_using_state)
