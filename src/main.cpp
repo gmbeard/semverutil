@@ -45,6 +45,7 @@ auto main(int argc, char const** argv) -> int
         r.version[0] += 1;
         r.version[1] = 0;
         r.version[2] = 0;
+        r.version[3] = 0;
     }
 
     if (opts & semver::CmdLineSwitches::increment_minor) {
