@@ -84,8 +84,14 @@ auto split_to(InputIterator i_first,
 {
     using OutputType = std::decay_t<decltype(*o_first)>;
     return split_to(
-        i_first, i_last, delim, o_first, o_last, [](auto u, auto v) {
+        i_first, i_last, delim, o_first, o_last, [&](auto u, auto v) {
+#ifdef SEMVERUTIL_HAS_STRING_VIEW_ITERATOR_PAIR_CONSTRUCTOR
             return OutputType(u, v);
+#else
+            return OutputType(
+                    &*i_first + static_cast<std::size_t>(u - i_first),
+                    static_cast<std::size_t>(v - u));
+#endif
         });
 }
 
