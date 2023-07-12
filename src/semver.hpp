@@ -3,11 +3,15 @@
 
 #include "./detail/semver.hpp"
 #include "./utils.hpp"
+#include "semverutil/config.hpp"
 #include <array>
 #include <cstring>
 #include <optional>
 #include <string>
 #include <utility>
+#ifdef SEMVERUTIL_HAS_FULL_3_WAY_COMPARE
+#include <compare>
+#endif
 
 namespace semver
 {
@@ -17,14 +21,25 @@ struct SemVer
     std::string prerelease;
     std::string metadata;
 
-    auto operator<=>(SemVer const& rhs) const noexcept -> std::partial_ordering;
     auto operator==(SemVer const& rhs) const noexcept -> bool;
+#ifdef SEMVERUTIL_HAS_FULL_3_WAY_COMPARE
+    auto operator<=>(SemVer const& rhs) const noexcept -> std::partial_ordering;
+#else
+    auto operator<(SemVer const& rhs) const noexcept -> bool;
+#endif
 
     auto major() const noexcept { return version[0]; };
     auto minor() const noexcept { return version[1]; };
     auto patch() const noexcept { return version[2]; };
     auto revision() const noexcept { return version[3]; };
 };
+
+#ifndef SEMVERUTIL_HAS_FULL_3_WAY_COMPARE
+auto operator!=(SemVer const& lhs, SemVer const& rhs) noexcept -> bool;
+auto operator<=(SemVer const& lhs, SemVer const& rhs) noexcept -> bool;
+auto operator>(SemVer const& lhs, SemVer const& rhs) noexcept -> bool;
+auto operator>=(SemVer const& lhs, SemVer const& rhs) noexcept -> bool;
+#endif
 
 template <typename InputIterator>
 auto parse_semver(InputIterator first, InputIterator last)

@@ -1,9 +1,14 @@
 #include "semver.hpp"
 
 #include <iostream>
+#ifndef SEMVERUTIL_HAS_FULL_3_WAY_COMPARE
+#include <tuple>
+#endif
+
 namespace semver
 {
 
+#ifdef SEMVERUTIL_HAS_FULL_3_WAY_COMPARE
 auto SemVer::operator<=>(SemVer const& rhs) const noexcept
     -> std::partial_ordering
 {
@@ -18,6 +23,33 @@ auto SemVer::operator<=>(SemVer const& rhs) const noexcept
 
     return prerelease <=> rhs.prerelease;
 }
+#else
+auto SemVer::operator<(SemVer const& rhs) const noexcept -> bool
+{
+    return std::tie(version, prerelease) <
+           std::tie(rhs.version, rhs.prerelease);
+}
+
+auto operator!=(SemVer const& lhs, SemVer const& rhs) noexcept -> bool
+{
+    return !(lhs == rhs);
+}
+
+auto operator<=(SemVer const& lhs, SemVer const& rhs) noexcept -> bool
+{
+    return (lhs < rhs) || (lhs == rhs);
+}
+
+auto operator>(SemVer const& lhs, SemVer const& rhs) noexcept -> bool
+{
+    return !(lhs <= rhs);
+}
+
+auto operator>=(SemVer const& lhs, SemVer const& rhs) noexcept -> bool
+{
+    return (lhs > rhs) || (lhs == rhs);
+}
+#endif
 
 auto SemVer::operator==(SemVer const& rhs) const noexcept -> bool
 {

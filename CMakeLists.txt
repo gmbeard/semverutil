@@ -9,6 +9,7 @@ project(
     VERSION ${current_version}
 )
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 message(STATUS "Project version: ${PROJECT_VERSION}")
 
 option(
@@ -17,6 +18,7 @@ option(
     OFF
 )
 
+include(Support)
 include(GNUInstallDirs)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
