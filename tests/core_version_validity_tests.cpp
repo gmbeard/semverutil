@@ -1,5 +1,6 @@
 #include "./testing.hpp"
 #include "detail/semver.hpp"
+#include "semverutil/config.hpp"
 #include "utils.hpp"
 #include <array>
 #include <cstring>
@@ -64,7 +65,12 @@ auto read_line(std::string_view data, std::string_view& line)
             }
             break;
         case EXTRACT:
+#ifdef SEMVERUTIL_HAS_STRING_VIEW_ITERATOR_PAIR_CONSTRUCTOR
             line = { start_pos, split_pos };
+#else
+            line = data.substr(std::size_t(start_pos - data.begin()),
+                               std::size_t(split_pos - start_pos));
+#endif
             if (split_pos != data.end())
                 split_pos += skip;
 
@@ -77,7 +83,12 @@ auto read_line(std::string_view data, std::string_view& line)
         }
     }
 
+#ifdef SEMVERUTIL_HAS_STRING_VIEW_ITERATOR_PAIR_CONSTRUCTOR
     return { state == END ? 0 : state, { start_pos, data.end() } };
+#else
+    return { state == END ? 0 : state,
+             data.substr(std::size_t(start_pos - data.begin())) };
+#endif
 }
 
 auto should_be_valid_semver(std::string_view value, bool check_valid) -> void
