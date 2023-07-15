@@ -18,8 +18,16 @@ option(
     OFF
 )
 
+option(
+    SEMVERUTIL_INSTALL_DEVEL
+    "Install target includes the ${PROJECT_NAME} development \
+headers and libs"
+    OFF
+)
+
 include(Support)
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -39,6 +47,45 @@ if(SEMVERUTIL_ENABLE_TESTS)
     add_subdirectory(tests)
 endif()
 
-install(TARGETS semverutil
+install(TARGETS semverutilbin
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+if(SEMVERUTIL_INSTALL_DEVEL)
+    configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/SemverutilConfig.cmake"
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Semverutil
+    )
+
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/SemverutilConfigVersion.cmake"
+        COMPATIBILITY SameMajorVersion
+    )
+
+    install(DIRECTORY include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        PATTERN "semverutil/cmdline.hpp" EXCLUDE
+    )
+
+    install(FILES ${PROJECT_BINARY_DIR}/config/semverutil/config.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/semverutil/
+    )
+
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/SemverutilConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/SemverutilConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Semverutil
+    )
+
+    install(TARGETS semverutil
+        EXPORT SemverutilTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+
+    install(EXPORT SemverutilTargets
+        FILE SemverutilTargets.cmake
+        NAMESPACE Semverutil::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Semverutil
+    )
+endif()

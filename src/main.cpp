@@ -1,5 +1,5 @@
-#include "./cmdline.hpp"
-#include "./semver.hpp"
+#include "semverutil/cmdline.hpp"
+#include "semverutil/semver.hpp"
 #include <iostream>
 #include <iterator>
 #include <span>

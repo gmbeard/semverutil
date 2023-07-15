@@ -5,7 +5,7 @@ configure_file(
 )
 
 add_library(
-    semverutilobj OBJECT
+    semverutil
     cmdline.cpp
     detail/semver.cpp
     semver.cpp
@@ -13,18 +13,28 @@ add_library(
 )
 
 target_include_directories(
-    semverutilobj
+    semverutil
     PUBLIC
-    "${PROJECT_BINARY_DIR}/config"
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/config>
+    $<INSTALL_INTERFACE:include>
 )
 
 add_executable(
-    semverutil
+    semverutilbin
     main.cpp
 )
 
 target_link_libraries(
-    semverutil
+    semverutilbin
     PRIVATE
-    semverutilobj
+    semverutil
 )
+
+set_target_properties(
+    semverutilbin
+    PROPERTIES
+        OUTPUT_NAME semverutil
+)
+

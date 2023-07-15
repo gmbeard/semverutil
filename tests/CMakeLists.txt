@@ -1,5 +1,5 @@
 add_library(testing OBJECT testing.cpp)
-link_libraries(testing semverutilobj)
+link_libraries(testing semverutil)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 add_executable(parsing_tests parsing_tests.cpp)
