@@ -1,3 +1,10 @@
+## 0.4.0
+### MINOR Changes:
+- Restructures the project to add a libsemverutil install target for devel output
+
+### PATCH Changes:
+- Fixes compilation issues on compilers with incomplete C++20 support ([#1](https://github.com/gmbeard/semverutil/issues/1))
+
 ## 0.3.0
 ### MINOR Changes:
 - Fixes a parsing issue where additional revision values on the input were treated as valid
