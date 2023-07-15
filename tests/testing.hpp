@@ -21,6 +21,20 @@
 
 #define TEST_WITH_CONTEXT(fn)                                                  \
     auto fn([[maybe_unused]] ::semver::testing::TestContext const& test_context)
+#define EXPECT_THROWS(statement)                                               \
+    do {                                                                       \
+        auto statement_threw = false;                                          \
+        try {                                                                  \
+            static_cast<void>((statement));                                    \
+        }                                                                      \
+        catch (...) {                                                          \
+            statement_threw = true;                                            \
+        }                                                                      \
+        if (!statement_threw)                                                  \
+            throw ::semver::testing::TestFailure(                              \
+                "Expected statement to throw: " STRINGIFY(statement) "\n in " __FILE__ ":" STRINGIFY(__LINE__));     \
+    }                                                                          \
+    while (0)
 
 namespace semver::testing
 {
