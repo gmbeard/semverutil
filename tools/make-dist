@@ -9,6 +9,7 @@ tar \
     --exclude './build' \
     --exclude './tools' \
     --exclude './.git' \
+    --exclude './.github' \
     --exclude './.cache' \
     --transform 's;^\.;semverutil-'${version}';' \
     -cJf /tmp/semverutil-${version}.tar.xz \

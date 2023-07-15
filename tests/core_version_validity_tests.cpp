@@ -1,7 +1,7 @@
 #include "./testing.hpp"
-#include "detail/semver.hpp"
 #include "semverutil/config.hpp"
-#include "utils.hpp"
+#include "semverutil/detail/semver.hpp"
+#include "semverutil/utils.hpp"
 #include <array>
 #include <cstring>
 #include <iostream>
