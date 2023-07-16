@@ -45,16 +45,34 @@ template <typename InputIterator>
 auto parse_semver(InputIterator first, InputIterator last)
     -> std::optional<SemVer>
 {
-    std::string_view const empty = "";
-
     std::array<std::string_view, 3> parts {};
-    auto r = split_to(first, last, AnyOf { "-+" }, begin(parts), end(parts));
+    std::array<std::string_view, 2> split_storage {};
+    auto pos =
+        split_to(first, last, '-', begin(split_storage), end(split_storage));
 
-    if (r == begin(parts))
-        return std::nullopt;
-
-    while (r != end(parts))
-        *r++ = empty;
+    /* We have to accommodate for the fact that both the pre-release value and
+     * the metadata value are optional. We also can't just split on all `-` and
+     * `+` tokens because both the pre-release and the metadata values may
+     * contain these tokens, so we must split on only the first occurance of
+     * each...
+     */
+    if (std::distance(begin(split_storage), pos) == 1) {
+        split_to(begin(split_storage[0]),
+                 end(split_storage[0]),
+                 '+',
+                 begin(split_storage),
+                 end(split_storage));
+        parts[0] = split_storage[0];
+        parts[2] = split_storage[1];
+    }
+    else {
+        parts[0] = split_storage[0];
+        split_to(begin(split_storage[1]),
+                 end(split_storage[1]),
+                 '+',
+                 next(begin(parts)),
+                 end(parts));
+    }
 
     decltype(SemVer::version) version {};
 

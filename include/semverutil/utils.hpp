@@ -43,7 +43,7 @@ template <typename InputIterator,
           typename OutputIterator>
 auto split_to(InputIterator i_first,
               InputIterator i_last,
-              Delim const& delim,
+              Delim delim,
               OutputIterator o_first,
               OutputIterator o_last,
               F transform) noexcept -> OutputIterator
@@ -56,8 +56,13 @@ auto split_to(InputIterator i_first,
     std::size_t n = 0;
 
     while (o_first != o_last) {
+        /* If there is only more space left in the output range then we just
+         * output the rest of the input, regardless of whether there are any
+         * more delimiters or not...
+         */
         if (std::next(o_first) == o_last)
             delim_pos = i_last;
+
         if constexpr (Transform<F, InputIterator>) {
             *o_first++ = transform(from, delim_pos);
         }
@@ -66,6 +71,7 @@ auto split_to(InputIterator i_first,
         }
 
         from = delim_pos != i_last ? ++delim_pos : delim_pos;
+
         delim_pos = std::find(from, i_last, delim);
 
         if (delim_pos == i_last && from == delim_pos)
