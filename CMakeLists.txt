@@ -51,6 +51,10 @@ install(TARGETS semverutilbin
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+install(FILES "${PROJECT_SOURCE_DIR}/semverutil.1"
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1/"
+)
+
 if(SEMVERUTIL_INSTALL_DEVEL)
     configure_package_config_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in"

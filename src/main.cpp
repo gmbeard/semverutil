@@ -1,5 +1,6 @@
 #include "semverutil/cmdline.hpp"
-#include "semverutil/semver.hpp"
+#include "semverutil/semverutil.hpp"
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <span>
@@ -26,7 +27,7 @@ auto main(int argc, char const** argv) -> int
     using semver::parse_multiple;
     using semver::SemVer;
 
-    auto opts =
+    auto const [opts, args] =
         parse_cmdline(std::span<char const*> { argv, std::size_t(argc) });
 
     std::vector<char> buffer { std::istreambuf_iterator<char> { std::cin },
@@ -63,6 +64,23 @@ auto main(int argc, char const** argv) -> int
         r.version[3] += 1;
     }
 
-    std::cout << r << '\n';
+    if (auto format_arg_pos =
+            std::find_if(args.begin(),
+                         args.end(),
+                         [](auto arg) { return arg.size() && arg[0] == '+'; });
+        format_arg_pos != args.end()) {
+        std::string formatted_output;
+        if (semver::write_formatted(
+                r, format_arg_pos->substr(1), formatted_output))
+            std::cout << formatted_output << '\n';
+        else {
+            std::cerr << "Invalid format string: " << format_arg_pos->substr(1)
+                      << '\n';
+            return 1;
+        }
+    }
+    else {
+        std::cout << r << '\n';
+    }
     return 0;
 }

@@ -3,12 +3,19 @@
 namespace semver
 {
 
-auto parse_cmdline(std::span<char const*> cmdline) noexcept -> std::uint32_t
+auto parse_cmdline(std::span<char const*> cmdline) noexcept
+    -> ParseCmdLineResult
 {
     std::uint32_t opts = 0;
+    std::vector<std::string_view> args;
     for (auto param : cmdline) {
         if (*param == '\0')
             break;
+
+        if (*param == '+') {
+            args.push_back(param);
+            continue;
+        }
 
         if (*param++ != '-')
             continue;
@@ -30,7 +37,7 @@ auto parse_cmdline(std::span<char const*> cmdline) noexcept -> std::uint32_t
             }
         }
     }
-    return opts;
+    return { opts, std::move(args) };
 }
 
 } // namespace semver
