@@ -1,3 +1,10 @@
+## 0.5.0
+### MINOR Changes:
+- Adds a `+FORMAT` cmdline parameter that interprets `%`-prefixed sequences for more control of the output
+
+### PATCH Changes:
+- Fixes an issue where the metadata value was parsed as the pre-release value if the pre-release value was missing from the input [#4](https://github.com/gmbeard/semverutil/issues/4)
+
 ## 0.4.0
 ### MINOR Changes:
 - Restructures the project to add a libsemverutil install target for devel output
