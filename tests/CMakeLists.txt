@@ -47,3 +47,8 @@ add_test(NAME invalid_core_version_tests
     COMMAND invalid_core_version_tests_wrapper.sh
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+add_executable(format_string_tests format_string_tests.cpp)
+target_link_libraries(format_string_tests testing)
+add_test(NAME format_string_tests COMMAND format_string_tests)
+

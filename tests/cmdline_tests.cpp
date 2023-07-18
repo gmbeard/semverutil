@@ -8,7 +8,7 @@ TEST_WITH_CONTEXT(should_parse_cmdline)
 {
     std::span<char const*> cmdline { test_context.argv,
                                      std::size_t(test_context.argc) };
-    auto opts = semver::parse_cmdline(cmdline);
+    auto const [opts, args] = semver::parse_cmdline(cmdline);
     EXPECT(opts & semver::CmdLineSwitches::increment_major);
     EXPECT(opts & semver::CmdLineSwitches::increment_minor);
     EXPECT(opts & semver::CmdLineSwitches::increment_patch);

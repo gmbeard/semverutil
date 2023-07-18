@@ -8,6 +8,7 @@ add_library(
     semverutil
     cmdline.cpp
     detail/semver.cpp
+    format.cpp
     semver.cpp
     utils.cpp
 )

@@ -3,6 +3,8 @@
 
 #include <cinttypes>
 #include <span>
+#include <string_view>
+#include <vector>
 
 namespace semver
 {
@@ -19,9 +21,16 @@ enum : std::uint32_t
     increment_revision = 8,
 };
 
-}
+} // namespace CmdLineSwitches
 
-auto parse_cmdline(std::span<char const*> cmdline) noexcept -> std::uint32_t;
+struct ParseCmdLineResult
+{
+    std::uint32_t options;
+    std::vector<std::string_view> args;
+};
+
+auto parse_cmdline(std::span<char const*> cmdline) noexcept
+    -> ParseCmdLineResult;
 
 } // namespace semver
 
