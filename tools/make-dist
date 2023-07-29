@@ -24,7 +24,15 @@ tar \
 cd ./dist
 sha256sum ${projectname}-source-${version}.tar.xz >${projectname}-source-${version}.sha256
 
+[[ -d "${topdir}/build" ]] || mkdir "${topdir}/build"
+
+cmake -S "${topdir}" -B "${topdir}/build" --fresh -DCMAKE_BUILD_TYPE=Release -DSEMVERUTIL_STATIC_BINARY=ON
+cmake --build "${topdir}/build" --clean-first
+
 staticbin=$(find "${topdir}" -type f -executable -name ${projectname}-static | head -1)
 if [[ -n "${staticbin}" ]]; then
-    cp "${staticbin}" "${topdir}/dist/${projectname}-static-$(uname -s)-$(uname -m)"
+    outname="${projectname}-static-$(uname -s)-$(uname -m)"
+    cp "${staticbin}" "${topdir}/dist/${outname}"
+    strip --strip-unneeded "${topdir}/dist/${outname}"
+    sha256sum "${outname}" >"${outname}.sha256"
 fi
