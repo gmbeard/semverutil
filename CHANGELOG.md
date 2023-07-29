@@ -1,3 +1,7 @@
+## 0.6.0
+### MINOR Changes:
+- Adds configure option to build a static binary (`-DSEMVERUTIL_STATIC_BINARY=ON`)
+
 ## 0.5.0
 ### MINOR Changes:
 - Adds a `+FORMAT` cmdline parameter that interprets `%`-prefixed sequences for more control of the output
