@@ -1,3 +1,7 @@
+## 0.6.1
+### PATCH Changes:
+- Fixes static binary dist util; Strips and SHA256 hashes
+
 ## 0.6.0
 ### MINOR Changes:
 - Adds configure option to build a static binary (`-DSEMVERUTIL_STATIC_BINARY=ON`)
