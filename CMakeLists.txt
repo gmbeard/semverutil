@@ -25,6 +25,12 @@ headers and libs"
     OFF
 )
 
+option(
+    SEMVERUTIL_STATIC_BINARY
+    "Build a stand-alone static ${PROJECT_NAME} binary"
+    OFF
+)
+
 include(Support)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)

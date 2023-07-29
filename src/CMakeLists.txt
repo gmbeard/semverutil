@@ -27,6 +27,12 @@ add_executable(
     main.cpp
 )
 
+target_link_options(
+    semverutilbin
+    PRIVATE
+    $<$<BOOL:${SEMVERUTIL_STATIC_BINARY}>:-static -static-libgcc -static-libstdc++>
+)
+
 target_link_libraries(
     semverutilbin
     PRIVATE
@@ -36,6 +42,6 @@ target_link_libraries(
 set_target_properties(
     semverutilbin
     PROPERTIES
-        OUTPUT_NAME semverutil
+        OUTPUT_NAME semverutil$<$<BOOL:${SEMVERUTIL_STATIC_BINARY}>:-static>
 )
 

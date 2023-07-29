@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
 
+set -e
+
 topdir=$(cd $(dirname $0)/..; pwd)
 version=$(cat ${topdir}/.versioning/current)
+projectname=semverutil
 
 cd ${topdir}
 
+[[ -d ./dist ]] && rm -rf ./dist
+mkdir ./dist
+
 tar \
     --exclude './build' \
-    --exclude './tools' \
+    --exclude './dist' \
     --exclude './.git' \
     --exclude './.github' \
     --exclude './.cache' \
-    --transform 's;^\.;semverutil-'${version}';' \
-    -cJf /tmp/semverutil-${version}.tar.xz \
+    --transform 's;^\.;'${projectname}'-'${version}';' \
+    -cJf ./dist/${projectname}-source-${version}.tar.xz \
     .
+
+cd ./dist
+sha256sum ${projectname}-source-${version}.tar.xz >${projectname}-source-${version}.sha256
+
+staticbin=$(find "${topdir}" -type f -executable -name ${projectname}-static | head -1)
+if [[ -n "${staticbin}" ]]; then
+    cp "${staticbin}" "${topdir}/dist/${projectname}-static-$(uname -s)-$(uname -m)"
+fi
