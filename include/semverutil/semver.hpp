@@ -5,6 +5,7 @@
 #include "./utils.hpp"
 #include "semverutil/config.hpp"
 #include <array>
+#include <cinttypes>
 #include <cstring>
 #include <optional>
 #include <string>
@@ -17,7 +18,7 @@ namespace semver
 {
 struct SemVer
 {
-    std::array<uint32_t, 4> version;
+    std::array<std::uint32_t, 4> version;
     std::string prerelease;
     std::string metadata;
 
