@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 
+if (APPLE)
+    set(CMAKE_OSX_ARCHTECTURES "arm64;x86_64")
+endif ()
+
 file(READ ".versioning/current" current_version)
 string(STRIP "${current_version}" current_version)
 

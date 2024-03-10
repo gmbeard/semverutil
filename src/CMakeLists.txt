@@ -27,11 +27,13 @@ add_executable(
     main.cpp
 )
 
+if (NOT APPLE)
 target_link_options(
     semverutilbin
     PRIVATE
     $<$<BOOL:${SEMVERUTIL_STATIC_BINARY}>:-static -static-libgcc -static-libstdc++>
 )
+endif ()
 
 target_link_libraries(
     semverutilbin
@@ -44,4 +46,3 @@ set_target_properties(
     PROPERTIES
         OUTPUT_NAME semverutil$<$<BOOL:${SEMVERUTIL_STATIC_BINARY}>:-static>
 )
-
